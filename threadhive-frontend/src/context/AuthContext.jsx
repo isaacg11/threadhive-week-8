@@ -1,51 +1,28 @@
-import { createContext, useContext, useState } from 'react';
-
-const AuthContext = createContext(null);
+import { useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  loginUser as loginUserAction,
+  logout as logoutAction,
+  selectAuth,
+  updateUser as updateUserAction,
+} from '../store/authSlice';
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => {
-    const t = localStorage.getItem('token');
-    return t && t !== 'undefined' && t !== 'null' ? t : null;
-  });
-
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser || storedUser === 'undefined' || storedUser === 'null') return null;
-    try {
-      return JSON.parse(storedUser);
-    } catch {
-      return null;
-    }
-  });
-
-  const loginUser = (data) => {
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      setToken(data.token);
-    }
-    if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
-  };
-
-  const updateUser = (updatedUser) => {
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    setUser(updatedUser);
-  };
-
-  return (
-    <AuthContext.Provider value={{ token, user, loginUser, logout, updateUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return children;
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  const dispatch = useDispatch();
+  const { token, user } = useSelector(selectAuth);
+
+  return useMemo(
+    () => ({
+      token,
+      user,
+      loginUser: (data) => dispatch(loginUserAction(data)),
+      logout: () => dispatch(logoutAction()),
+      updateUser: (updatedUser) => dispatch(updateUserAction(updatedUser)),
+    }),
+    [dispatch, token, user],
+  );
+}

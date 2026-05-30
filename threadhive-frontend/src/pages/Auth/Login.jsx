@@ -1,5 +1,5 @@
 import { Container, Card, Form, Button, Spinner } from "react-bootstrap";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
