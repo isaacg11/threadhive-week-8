@@ -28,7 +28,7 @@ export const fetchAPI = (endpoint, options = {}) => {
   return apiClient.request({
     url: endpoint,
     ...rest,
-    data: body ? JSON.parse(body) : undefined,
+    data: typeof body === 'string' ? JSON.parse(body) : body,
   });
 };
 
