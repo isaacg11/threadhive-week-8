@@ -22,7 +22,10 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-apiClient.interceptors.response.use((response) => response.data);
+apiClient.interceptors.response.use(
+  (response) => response.data,
+  (error) => Promise.reject(error),
+);
 
 export const fetchAPI = (endpoint, options = {}) => {
   const { body, ...rest } = options;
