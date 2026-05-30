@@ -1,31 +1,31 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-
-const ThemeContext = createContext(null);
+import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectTheme, toggleDarkMode as toggleDarkModeAction } from '../store/themeSlice';
 
 export function ThemeProvider({ children }) {
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('darkMode') === 'true';
-  });
+  const { darkMode } = useSelector(selectTheme);
 
   useEffect(() => {
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
+      return;
     }
+
+    document.documentElement.removeAttribute('data-theme');
   }, [darkMode]);
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    localStorage.setItem('darkMode', newMode);
-    setDarkMode(newMode);
-  };
-
-  return (
-    <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return children;
 }
 
-export const useTheme = () => useContext(ThemeContext);
+export function useTheme() {
+  const dispatch = useDispatch();
+  const { darkMode } = useSelector(selectTheme);
+
+  return useMemo(
+    () => ({
+      darkMode,
+      toggleDarkMode: () => dispatch(toggleDarkModeAction()),
+    }),
+    [darkMode, dispatch],
+  );
+}
