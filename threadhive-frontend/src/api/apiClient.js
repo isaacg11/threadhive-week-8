@@ -22,6 +22,8 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+apiClient.interceptors.response.use((response) => response.data);
+
 export const fetchAPI = (endpoint, options = {}) => {
   const { body, ...rest } = options;
 
